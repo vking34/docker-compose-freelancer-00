@@ -12,7 +12,7 @@ CORS(app)
 
 lib = cdll.LoadLibrary("./cryptography.so")
 class Cryptography_return(Structure):
-    _fields_ = [("prime1", c_longlong), ("prime2", c_longlong), ("carmichael", c_longlong),("e", c_longlong), ("d", c_longlong)]
+    _fields_ = [("modulus", c_longlong), ("carmichael", c_longlong),("e", c_longlong), ("d", c_longlong)]
 class go_string(Structure):
  _fields_ = [
  ("p", c_char_p),
@@ -25,17 +25,16 @@ lib.Start.argtypes = [c_longlong, c_longlong]
 lib.Start.restype = Cryptography_return
 c= lib.Start(2,5)
 
-lib.getEncryptedMessage.restype = c_wchar_p
-str1 = input("Enter:")
+lib.getEncryptedMessage.restype = c_char_p
+str1 = "input"
 v = go_string(c_char_p(str1.encode('utf-8')), len(str1))
-modulus = c.prime1* c.prime2
-decryptedMsg = lib.getEncryptedMessage(v, modulus, c.e)
+decryptedMsg = lib.getEncryptedMessage(v, c.modulus, c.e)
 print (decryptedMsg.decode())
 
 #lib.getDecryptedMessage.argtypes = [c_char_p, c_longlong, c_longlong, c_longlong]
-lib.getDecryptedMessage.restype = c_wchar_p
+lib.getDecryptedMessage.restype = c_char_p
 b = go_string(c_char_p(decryptedMsg), len(decryptedMsg))
-print (lib.getDecryptedMessage(b, c.d,c.prime1, c.prime2))
+print (lib.getDecryptedMessage(b, c.d,c.modulus))
 #print (lib.getDecryptedMessage(b, c.d,c.prime1, c.prime2))
 
 

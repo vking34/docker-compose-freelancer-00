@@ -75,14 +75,13 @@ struct Start_return {
 	GoInt r1;
 	GoInt r2;
 	GoInt r3;
-	GoInt r4;
 };
 
 extern struct Start_return Start(GoInt p0, GoInt p1);
 
 extern GoUint8 isPrime(GoInt p0);
 
-extern char* getDecryptedMessage(GoString p0, GoInt p1, GoInt p2, GoInt p3);
+extern char* getDecryptedMessage(GoString p0, GoInt p1, GoInt p2);
 
 extern char* getEncryptedMessage(GoString p0, GoInt p1, GoInt p2);
 

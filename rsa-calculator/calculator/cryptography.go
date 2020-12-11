@@ -5,7 +5,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
-	"fmt"
+	
 )
 
 type Cryptography struct {
@@ -18,10 +18,10 @@ type Cryptography struct {
 }
 
 //export Start
-func Start(prime1 int, prime2 int) (int, int, int, int, int) {
+func Start(prime1 int, prime2 int) (int, int, int, int) {
 	c := new(Cryptography)
 	c.Init(61, 53)
-	return c.prime1, c.prime2, c.carmichael, c.e, c.d
+	return c.modulus, c.carmichael, c.e, c.d
 }
 
 //export isPrime
@@ -85,8 +85,7 @@ func (c *Cryptography) getSecondPartOfKey() int {
 }
 
 //export getDecryptedMessage
-func getDecryptedMessage(message string, d int, prime1 int, prime2 int) *C.char {
-	modulus := prime1 * prime2
+func getDecryptedMessage(message string, d int, modulus int) *C.char {
 	result := ""
 	msg := strings.Split(message, " ")
 	for _, letter := range msg {
@@ -111,7 +110,6 @@ func getDecryptedMessage(message string, d int, prime1 int, prime2 int) *C.char 
 	}
 
 	result += string(k) */
-	fmt.Println(C.CString(result))
 	return C.CString(result)
 }
 func (c *Cryptography) getD() int {
