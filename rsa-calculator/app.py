@@ -7,6 +7,7 @@ import binascii
 from ctypes import *
 import ctypes
 
+# Docker-compse build work!!
 # configuration
 DEBUG = True
 
