@@ -36,13 +36,21 @@ services:
   #java:
   #  build:
   #    context: .
-  #    dockerfile: java.Dockerfile
+  #   dockerfile: java.Dockerfile
 
   js:
     build:
       context: .
       dockerfile: js.Dockerfile
-
+  react:
+    build:
+      context: .
+      dockerfile: react.Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - "/app/node_modules"
+      - "./:/app"
   #ocaml:
   #  build:
   #    context: .
@@ -72,4 +80,3 @@ services:
   #  build:
   #    context: .
   #    dockerfile: scala.Dockerfile
-

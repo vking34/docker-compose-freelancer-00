@@ -18,6 +18,10 @@ app = Flask(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 app = Flask(__name__)
 
+en_msg = ""
+encrypted_msg = ""
+keyPair = RSA.generate(3072)
+
 lib = cdll.LoadLibrary("./cryptography.so")
 class Cryptography_return(Structure):
     _fields_ = [("modulus", c_longlong), ("carmichael", c_longlong),("e", c_longlong), ("d", c_longlong)]
@@ -36,23 +40,16 @@ c= lib.Start(2,5)
 lib.getEncryptedMessage.restype = c_char_p
 str1 = "input"
 v = go_string(c_char_p(str1.encode('utf-8')), len(str1))
-decryptedMsg = lib.getEncryptedMessage(v, c.modulus, c.e)
-print (decryptedMsg.decode())
+encryptedMsg = lib.getEncryptedMessage(v, c.modulus, c.e)
+print (encryptedMsg.decode())
 
 #lib.getDecryptedMessage.argtypes = [c_char_p, c_longlong, c_longlong, c_longlong]
 lib.getDecryptedMessage.restype = c_char_p
-b = go_string(c_char_p(decryptedMsg), len(decryptedMsg))
+b = go_string(c_char_p(encryptedMsg), len(encryptedMsg))
 print (lib.getDecryptedMessage(b, c.d,c.modulus).decode('utf-8'))
 #print (lib.getDecryptedMessage(b, c.d,c.prime1, c.prime2))
 
 
-tasks = [
-    {
-        'id': 1,
-        'arr': [0, 0, 0, 0, 0, 0],
-        'data': []
-    }
-]
 
 @app.route('/')
 def index():
@@ -89,8 +86,9 @@ def welcome():
     res = {}
     if check_prime(int(first)) and check_prime(int(second)):
         res['success'] = True
-        private_key = "12345 67890"
-        public_key = "54321 09876"
+        c= lib.Start(first,second)
+        private_key = str(c.d)+ " "+ str(c.modulus)
+        public_key = str(c.modulus) + " "+str(c.e) 
         res['private_key'] = private_key
         res['public_key'] = public_key
         return res
@@ -112,14 +110,18 @@ def encrypt():
     public_key = keyPair.publickey()
     message = req['message']
     # msg = ''.join(format(ord(i), 'b') for i in message)
-    msg = message.encode('ascii')
-    encryptor = PKCS1_OAEP.new(public_key)
-    encrypted = encryptor.encrypt(msg)
+    #msg = message.encode('ascii')
+    v = go_string(c_char_p(message.encode('utf-8')), len(message))
+    encryptedMsg = lib.getEncryptedMessage(v, c.modulus, c.e)
+    #encryptor = PKCS1_OAEP.new(public_key)
+    #encrypted = encryptor.encrypt(msg)
+    encryptedMsg = encrypted.decode()
     res = {}
     res['success'] = True
-    encrypted_msg = encrypted
+    """ encrypted_msg = encrypted
     en_msg = binascii.hexlify(encrypted).decode('ascii')
-    res['message'] = binascii.hexlify(encrypted).decode('ascii')
+    res['message'] = binascii.hexlify(encrypted).decode('ascii') """
+    res['message'] = encryptedMsg
     return res
 
 # Decryptor function for frontend (first call)
@@ -132,15 +134,19 @@ def decrypt_msg():
     en_msg = req['en_message']
     private_key1 = req['pri_key1']
     private_key2 = req['pri_key2']
-    encrypted = binascii.unhexlify(en_msg.encode('ascii'))
-    print(encrypted)
-    decryptor = PKCS1_OAEP.new(keyPair)
+    #encrypted = binascii.unhexlify(en_msg.encode('ascii'))
+    print(en_msg)
+    #decryptor = PKCS1_OAEP.new(keyPair)
     print(encrypted_msg)
-    decrypted = decryptor.decrypt(encrypted_msg)
+    #decrypted = decryptor.decrypt(encrypted_msg)
+    encryptedMsgStruct = go_string(c_char_p(en_msg), len(en_msg))
+    decrypted = lib.getDecryptedMessage(encryptedMsgStruct, private_key1,private_key2).decode('utf-8')
     res = {}
     res['success'] = True
-    print(binascii.hexlify(decrypted).decode('ascii'))
-    res['message'] = binascii.hexlify(decrypted).decode('ascii')
+    """ print(binascii.hexlify(decrypted).decode('ascii'))
+    res['message'] = binascii.hexlify(decrypted).decode('ascii') """
+    print(decrypted)
+    res['message'] = decrypted
     return res
 
 
