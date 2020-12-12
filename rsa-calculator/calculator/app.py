@@ -34,7 +34,7 @@ print (decryptedMsg.decode())
 #lib.getDecryptedMessage.argtypes = [c_char_p, c_longlong, c_longlong, c_longlong]
 lib.getDecryptedMessage.restype = c_char_p
 b = go_string(c_char_p(decryptedMsg), len(decryptedMsg))
-print (lib.getDecryptedMessage(b, c.d,c.modulus))
+print (lib.getDecryptedMessage(b, c.d,c.modulus).decode('utf-8'))
 #print (lib.getDecryptedMessage(b, c.d,c.prime1, c.prime2))
 
 
