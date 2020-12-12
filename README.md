@@ -12,8 +12,10 @@ Here I use Flask framework.
 
 
 ## Instruction 
-- If you are running from home machine.
-    + Step 1: install python 3 
+- From root directory of project  run 2 commands:
+    docker-compose build && docker-compose up
+- It will take a while to install npm and react-script. 
+- Enjoy
 
 ## Communication
 - We are separate the system into 3 parts: Calculator, Server and Client. Calculator will communicate with Server via Python "ctyes" and native library. 

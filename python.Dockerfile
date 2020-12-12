@@ -10,8 +10,6 @@ COPY . .
 
 # for ZeroMQ server
 #EXPOSE 5555
-WORKDIR /app/rsa-calculator/calculator
+WORKDIR /app/rsa-calculator
 #CMD python3 hello-world/hello.py
-
-
 CMD python3 app.py

@@ -1,11 +1,7 @@
 FROM node:alpine
-
-WORKDIR /app/rsa-calculator/frontend
-
-RUN npm install
-
 COPY . /app
-
+WORKDIR /app/rsa-calculator/frontend
+RUN npm install
 RUN npm build
 
 EXPOSE 5000
